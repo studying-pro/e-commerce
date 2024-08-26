@@ -1,0 +1,10 @@
+IPermissionRole:
+  type: object
+  properties:
+    role:
+      type: string
+    permissions:
+      type: string
+  required:
+    - role
+    - permissions
