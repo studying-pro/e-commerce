@@ -1,0 +1,36 @@
+/api/v1/account/signup:
+  post:
+    tags:
+      - Account Management
+    summary: Sign up
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/SignUpRequest'
+    responses:
+      '200':
+        description: Successful response
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SignUpResponse'
+/api/v1/account/login:
+  post:
+    tags:
+      - Account Management
+    summary: Login
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/LoginRequest'
+    responses:
+      '200':
+        description: Successful response
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginResponse'

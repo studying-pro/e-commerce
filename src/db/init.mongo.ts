@@ -14,7 +14,7 @@ const db: DBConnection = {
   instance: null,
   init() {
     mongoose.connect(uri, {
-      authSource: 'admin'
+      authSource: DB
     })
 
     this.instance = mongoose.connection
