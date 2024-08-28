@@ -16,15 +16,15 @@ interface IDiscountSchema {
   value: number
   appliesToCategories: string[]
   appliesTo: string
-  productIds: ObjectId[]
-  customerIds: ObjectId[]
+  productIds: mongoose.Types.ObjectId[]
+  customerIds: mongoose.Types.ObjectId[]
 
   maxUses?: number
   maxUsesPerCustomer?: number
 
   isActive: boolean
 
-  userId: ObjectId
+  userId: mongoose.Types.ObjectId
 }
 
 interface IDiscountDocument extends IDiscountSchema, Document {}

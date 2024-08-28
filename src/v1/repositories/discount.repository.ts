@@ -1,6 +1,7 @@
-import { QueryOptions } from 'mongoose'
+import { ObjectId, QueryOptions } from 'mongoose'
 import { DiscountModel, IDiscountSchema } from '../models/discount/discounts.schema'
 import { ConflictError, InternalServerError, NotFound } from '~/models/Error'
+import { IProductDocument } from '../models/product/products.schema'
 
 const getDiscounts = async (query: IDiscountSchema, options: QueryOptions, limit: number = 50, offset = 0) => {
   return {
@@ -67,4 +68,44 @@ const checkDiscountCode = async (code: string) => {
   return !!discount
 }
 
-export { getDiscounts, getDiscountById, createDiscount, updateDiscount, deleteDiscount }
+const checkAndApplyDiscount = async (
+  code: string | undefined,
+  product: IProductDocument | undefined,
+  quantity: number,
+  customerId: ObjectId
+) => {
+  if (!product) {
+    throw new NotFound('Product not found')
+  }
+
+  if (!code || code === '') {
+    return { finalPrice: product.price * quantity, discountId: null }
+  }
+  const discount = await DiscountModel.findOne({ isActive: true, code: code })
+
+  if (!discount) {
+    throw new NotFound('Discount not found')
+  }
+
+  if (discount.startDate && discount.startDate > new Date()) {
+    throw new ConflictError('Discount is not active yet')
+  }
+
+  if (discount.appliesTo === 'specific' && !discount.productIds.includes(product.id)) {
+    throw new ConflictError('Discount not applicable to this product')
+  }
+
+  if (discount.maxUses && discount.appliedCount >= discount.maxUses) {
+    throw new ConflictError('Discount has reached its maximum usage limit')
+  }
+
+  const totalPrice = product.price * quantity
+  const finalPrice = discount.type === 'percentage' ? (discount.value / 100) * totalPrice : totalPrice - discount.value
+  console.log(finalPrice)
+  return {
+    finalPrice,
+    discountId: discount.id
+  }
+}
+
+export { getDiscounts, getDiscountById, createDiscount, updateDiscount, deleteDiscount, checkAndApplyDiscount }

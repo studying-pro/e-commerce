@@ -1,13 +1,13 @@
 import Joi from 'joi'
 
-const discountValidation = Joi.object({
+const createDiscountRequestValidate = Joi.object({
   name: Joi.string().required(),
   description: Joi.string().optional(),
   type: Joi.string().valid('percentage', 'fixed').required(),
   code: Joi.string().required(),
   startDate: Joi.date().min('now').required(),
   endDate: Joi.date().min(Joi.ref('startDate')).required(),
-  value: Joi.string().when('type', [
+  value: Joi.number().when('type', [
     { is: 'percentage', then: Joi.number().min(0).max(100).required() },
     { is: 'fixed', then: Joi.number().min(0).required() }
   ]),
@@ -24,4 +24,4 @@ const discountValidation = Joi.object({
     })
 })
 
-export default discountValidation
+export default createDiscountRequestValidate
