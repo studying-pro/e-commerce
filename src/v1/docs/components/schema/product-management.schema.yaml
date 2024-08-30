@@ -1,0 +1,162 @@
+Request:
+  CreateProductRequest:
+    type: object
+    properties:
+      name:
+        type: string
+      price:
+        type: number
+      category:
+        type: string
+      description:
+        type: string
+      stock:
+        type: integer
+      image:
+        type: string
+      brand:
+        type: string
+      attributes:
+        type: object
+        oneOf:
+          - $ref: '#/components/schemas/ClothingAttributes'
+          - $ref: '#/components/schemas/ElectronicsAttributes'
+    required:
+      - name
+      - price
+      - category
+      - stock
+      - brand
+      - attributes
+
+  UpdateProductRequest:
+    type: object
+    properties:
+      name:
+        type: string
+      price:
+        type: number
+      category:
+        type: string
+      description:
+        type: string
+      stock:
+        type: integer
+      image:
+        type: string
+      brand:
+        type: string
+      attributes:
+        type: object
+        oneOf:
+          - $ref: '#/components/schemas/ClothingAttributes'
+          - $ref: '#/components/schemas/ElectronicsAttributes'
+
+  ClothingAttributes:
+    type: object
+    properties:
+      color:
+        type: string
+      size:
+        type: string
+      material:
+        type: string
+    required:
+      - color
+      - size
+      - material
+
+  ElectronicsAttributes:
+    type: object
+    properties:
+      features:
+        type: array
+        items:
+          type: string
+      color:
+        type: string
+      weight:
+        type: number
+      dimensions:
+        type: object
+        properties:
+          height:
+            type: number
+          width:
+            type: number
+          depth:
+            type: number
+        required:
+          - height
+          - width
+          - depth
+    required:
+      - features
+      - color
+      - weight
+      - dimensions
+
+Response:
+  ProductResponse:
+    type: object
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+      price:
+        type: number
+      brand:
+        type: string
+      description:
+        type: string
+      stock:
+        type: integer
+      sold:
+        type: integer
+      image:
+        type: string
+      category:
+        type: string
+      tags:
+        type: array
+        items:
+          type: string
+      rating:
+        type: number
+      topSeller:
+        type: boolean
+      slug:
+        type: string
+      isDraft:
+        type: boolean
+      isPublish:
+        type: boolean
+      attributes:
+        type: object
+        oneOf:
+          - $ref: '#/components/schemas/ClothingAttributes'
+          - $ref: '#/components/schemas/ElectronicsAttributes'
+      createdAt:
+        type: string
+        format: date-time
+      updatedAt:
+        type: string
+        format: date-time
+
+  ProductListResponse:
+    type: object
+    properties:
+      data:
+        type: array
+        items:
+          $ref: '#/components/schemas/ProductResponse'
+      metadata:
+        type: object
+        properties:
+          total:
+            type: integer
+          limit:
+            type: integer
+          offset:
+            type: integer

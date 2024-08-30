@@ -1,6 +1,7 @@
 import mongoose, { Schema, model, Document, ObjectId } from 'mongoose'
 import { DOCUMENT_NAME as userDocument } from '../account/users.schema'
 import slugify from 'slugify'
+import elasticClient from '~/config/elasticsearch.config'
 
 const DOCUMENT_NAME = 'product'
 const COLLECTION_NAME = 'products'
@@ -65,10 +66,46 @@ const productSchema = new Schema<IProductDocument>(
   }
 )
 
+// Add text index
+productSchema.index({ name: 'text', description: 'text' })
+
 productSchema.pre('save', function (next) {
   this.slug = slugify(this.name, { lower: true })
   next()
 })
+
+// Add Elasticsearch indexing hooks
+productSchema.post('save', function (doc: IProductDocument) {
+  elasticClient.index({
+    index: 'products',
+    id: doc.id.toString(),
+    body: {
+      _doc: doc
+    }
+  })
+})
+
+productSchema.post('findOneAndUpdate', function (doc: IProductDocument) {
+  console.log('Updating Elasticsearch document:', doc.id)
+  const { _id, ...partialDoc } = doc
+  elasticClient.update({
+    index: 'products',
+    id: doc.id.toString(),
+    body: {
+      doc: partialDoc
+    }
+  })
+})
+
+productSchema.post('findOneAndDelete', function (doc: IProductDocument) {
+  if (doc) {
+    elasticClient.delete({
+      index: 'products',
+      id: doc.id.toString()
+    })
+  }
+})
+
 // Create the product model
 const ProductModel = model<IProductDocument>(DOCUMENT_NAME, productSchema)
 

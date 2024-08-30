@@ -34,3 +34,21 @@
           application/json:
             schema:
               $ref: '#/components/schemas/LoginResponse'
+/api/v1/account/refresh-token:
+  post:
+    tags:
+      - Account Management
+    summary: Refresh Token
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/RefreshTokenRequest'
+    responses:
+      '200':
+        description: Successful response
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RefreshTokenResponse'

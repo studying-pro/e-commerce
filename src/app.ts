@@ -7,6 +7,8 @@ import { json } from 'body-parser'
 import db from './db/init.mongo'
 import router from './v1/routes'
 import { errorGloballyHandler } from './middlewares/error.handler'
+import redis from './db/init.redis'
+import initElasticsearch from './db/init.elasticsearch'
 
 const app = express()
 
@@ -19,6 +21,8 @@ app.use(json())
 
 // Initialize the database connection
 db.init()
+redis.init()
+initElasticsearch()
 
 app.use('/api/v1', router)
 

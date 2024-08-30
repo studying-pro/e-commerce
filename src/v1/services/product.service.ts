@@ -65,7 +65,14 @@ class ProductFactory implements IProductService {
     return unpublishProduct(id, userId)
   }
   async searchProduct(search: string, query: IProductSchema, limit: number, offset: number): Promise<IListResult> {
-    return searchProducts(search, query, limit, offset)
+    console.log('search', search)
+    const result = await searchProducts(search, query, limit, offset)
+    return {
+      data: result.data,
+      total: typeof result.total === 'number' ? result.total : result.total.value,
+      limit: result.limit,
+      offset: result.offset
+    }
   }
 
   async getProduct(id: string): Promise<IProductDocument> {

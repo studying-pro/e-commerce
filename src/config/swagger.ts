@@ -13,8 +13,10 @@ const pathDocs = paths
 const newSwaggerSpec = {
   ...swaggerSpec,
   components: {
-    schemas: { ...swaggerSpec.components.schemas, ...schemaRequest, ...schemaResponse }
+    schemas: { ...swaggerSpec.components.schemas, ...schemaRequest, ...schemaResponse },
+    securitySchemes: swaggerSpec.components.securitySchemes
   },
+  security: swaggerSpec.security,
   paths: { ...swaggerSpec.paths, ...pathDocs }
 }
 

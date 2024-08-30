@@ -9,11 +9,12 @@ import { TokenExpiredError } from 'jsonwebtoken'
 export const authenticationHandler = async (req: Request, res: Response, next: NextFunction) => {
   const userId = req.headers[HEADER.CLIENT_ID]
   const auth = req.headers[HEADER.AUTHORIZATION] as string
+  const authWithoutBearer = auth.replace('Bearer ', '')
   if (!userId) {
     throw new Unauthorized('Authentication failed')
   }
 
-  if (!auth) {
+  if (!authWithoutBearer) {
     throw new Unauthorized('Authentication failed')
   }
 
@@ -24,7 +25,7 @@ export const authenticationHandler = async (req: Request, res: Response, next: N
   }
 
   try {
-    const decoded = verifyToken(auth, keyStore.publicKey)
+    const decoded = verifyToken(authWithoutBearer, keyStore.publicKey)
     if (!decoded) {
       throw new Unauthorized('Authentication failed')
     }

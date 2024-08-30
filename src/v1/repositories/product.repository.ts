@@ -1,9 +1,9 @@
-import { PipelineStage, QueryOptions } from 'mongoose'
+import { QueryOptions } from 'mongoose'
 import { IProductSchema, ProductModel } from '../models/product/products.schema'
 import { UserModel } from '../models/account/users.schema'
 import { BadRequest, NotFound } from '~/models/Error'
 import { IListResult } from '~/type'
-
+import elasticClient from '~/config/elasticsearch.config'
 const findMyProducts = async (
   id: string,
   query: IProductSchema,
@@ -64,43 +64,61 @@ const findProductById = async (id: string) => {
 }
 
 const searchProducts = async (search: string, query: IProductSchema, limit: number = 50, offset: number = 0) => {
-  console.log(search)
-  const agg: PipelineStage[] = [
-    {
-      $search: {
-        index: 'default',
-        text: {
-          query: search,
-          path: {
-            wildcard: '*'
-          }
+  const result = await elasticClient.search({
+    index: 'products',
+    body: {
+      from: offset,
+      size: limit,
+      query: {
+        bool: {
+          must: [
+            {
+              nested: {
+                path: '_doc',
+                query: {
+                  bool: {
+                    must: [
+                      {
+                        multi_match: {
+                          query: search,
+                          fields: ['_doc.name', '_doc.description', '_doc.category', '_doc.tags'],
+                          fuzziness: 'AUTO',
+                          operator: 'and'
+                        }
+                      },
+                      {
+                        term: {
+                          '_doc.isPublish': true
+                        }
+                      },
+                      {
+                        term: {
+                          '_doc.isDraft': false
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          ]
         }
       }
-    },
-    {
-      $sort: {
-        score: {
-          $meta: 'textScore'
-        }
-      }
-    },
-    {
-      $match: {
-        ...query
-      }
-    },
-    {
-      $limit: limit
-    },
-    {
-      $skip: offset
     }
-  ]
+  })
 
-  const products = await ProductModel.aggregate(agg)
+  console.log('Elasticsearch result:', JSON.stringify(result, null, 2))
+
+  const hits = result.hits.hits
+  const total = result.hits.total || 0
+  const products = hits.map((hit: any) => ({
+    ...hit._source._doc,
+    id: hit._id
+  }))
+
   return {
     data: products,
-    total: products.length,
+    total,
     limit,
     offset
   }
@@ -126,7 +144,7 @@ const updateProduct = async (id: string, userId: string, payload: IProductSchema
   return product
 }
 const publishProduct = async (id: string, userId: string) => {
-  const data = await ProductModel.findByIdAndUpdate(
+  const data = await ProductModel.findOneAndUpdate(
     {
       _id: id,
       userId
@@ -225,6 +243,12 @@ const restoreProduct = async (id: string, userId: string) => {
   }
 
   return data
+}
+
+// Add this function to check indexes
+const checkIndexes = async () => {
+  const indexes = await ProductModel.collection.getIndexes()
+  console.log('Indexes:', indexes)
 }
 
 export {

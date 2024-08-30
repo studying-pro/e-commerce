@@ -15,4 +15,12 @@ const dbConfig: DbConfig = {
   DB: process.env.NODE_ENV !== 'production' ? (process.env.DB_DATABASE_DEV ?? '') : (process.env.DB_DATABASE_PROD ?? '')
 }
 
-export default dbConfig
+const redisConfig = {
+  host: process.env.REDIS_DEV_HOST ?? 'localhost',
+  port: Number(process.env.REDIS_DEV_PORT ?? 6379),
+  username: process.env.REDIS_DEV_USERNAME ?? '',
+  password: process.env.REDIS_DEV_PASSWORD ?? '',
+  db: Number(process.env.REDIS_DEV_DB ?? 0)
+}
+
+export { dbConfig, redisConfig }

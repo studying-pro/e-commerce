@@ -12,4 +12,15 @@ tags:
     description: Endpoints related to user './paths/user-management.yaml
 components:
   schemas:
+  securitySchemes:
+    ClientIdAuth:
+      type: apiKey
+      in: header
+      name: x-client-id
+    BearerAuth:
+      type: http
+      scheme: bearer
+security:
+  - ClientIdAuth: []
+    BearerAuth: []
 paths:

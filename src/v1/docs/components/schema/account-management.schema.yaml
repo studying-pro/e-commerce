@@ -36,6 +36,15 @@ Request:
       - email
       - password
 
+  RefreshTokenRequest:
+    type: object
+    properties:
+      refreshToken:
+        type: string
+        description: User's refresh token
+    required:
+      - refreshToken
+
 # Response
 Response:
   SignUpResponse:
@@ -63,3 +72,21 @@ Response:
                 type: string
   LoginResponse:
     $ref: '#/components/schemas/SignUpResponse'
+  RefreshTokenResponse:
+    type: object
+    properties:
+      data:
+        type: object
+        properties:
+          metadata:
+            type: object
+            properties:
+              user:
+                type: object
+          token:
+            type: object
+            properties:
+              accessToken:
+                type: string
+              refreshToken:
+                type: string

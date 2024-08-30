@@ -1,0 +1,142 @@
+/api/v1/products:
+  post:
+    tags:
+      - Product Management
+    summary: Create a new product
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CreateProductRequest'
+    responses:
+      '201':
+        description: Product created successfully
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductResponse'
+  get:
+    tags:
+      - Product Management
+    summary: Query products
+    parameters:
+      - in: query
+        name: limit
+        schema:
+          type: integer
+        description: Number of products to return
+      - in: query
+        name: offset
+        schema:
+          type: integer
+        description: Number of products to skip
+    responses:
+      '200':
+        description: Successful response
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductListResponse'
+
+/api/v1/products/{productId}:
+  get:
+    tags:
+      - Product Management
+    summary: Get a product by ID
+    parameters:
+      - in: path
+        name: productId
+        required: true
+        schema:
+          type: string
+    responses:
+      '200':
+        description: Successful response
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductResponse'
+  put:
+    tags:
+      - Product Management
+    summary: Update a product
+    parameters:
+      - in: path
+        name: productId
+        required: true
+        schema:
+          type: string
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/UpdateProductRequest'
+    responses:
+      '200':
+        description: Product updated successfully
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductResponse'
+  delete:
+    tags:
+      - Product Management
+    summary: Delete a product
+    parameters:
+      - in: path
+        name: productId
+        required: true
+        schema:
+          type: string
+    responses:
+      '204':
+        description: Product deleted successfully
+
+/api/v1/products/search:
+  get:
+    tags:
+      - Product Management
+    summary: Search products
+    parameters:
+      - in: query
+        name: limit
+        schema:
+          type: integer
+        description: Number of products to return
+      - in: query
+        name: offset
+        schema:
+          type: integer
+        description: Number of products to skip
+      - in: query
+        name: search
+        schema:
+          type: string
+    responses:
+      '200':
+        description: Successful response
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductListResponse'
+
+/api/v1/products/me/{productId}/publish:
+  put:
+    tags:
+      - Product Management
+    summary: Publish a product
+    parameters:
+      - in: path
+        name: productId
+        required: true
+        schema:
+          type: string
+    responses:
+      '200':
+        description: Product published successfully
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductResponse'

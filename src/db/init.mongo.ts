@@ -1,4 +1,4 @@
-import dbConfig from '~/config/db.config'
+import { dbConfig } from '~/config/db.config'
 import mongoose, { Connection } from 'mongoose'
 
 const { SCHEME, HOST, USER, PASSWORD, DB } = dbConfig
@@ -13,9 +13,13 @@ type DBConnection = {
 const db: DBConnection = {
   instance: null,
   init() {
-    mongoose.connect(uri, {
-      authSource: DB
-    })
+    if (this.instance) {
+      return this.instance
+    } else {
+      mongoose.connect(uri, {
+        authSource: DB
+      })
+    }
 
     this.instance = mongoose.connection
 
