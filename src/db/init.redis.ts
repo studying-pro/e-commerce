@@ -1,17 +1,11 @@
-import { createClient } from 'redis'
+import Redis from 'ioredis'
 import { redisConfig } from '~/config/db.config'
 
 const { host, port, username, password, db } = redisConfig
 
 type RedisConnection = {
-  instance: any | null
+  instance: Redis | null
   init: () => void
-}
-
-const generateUri = () => {
-  return username && password
-    ? `redis://${username}:${password}@${host}:${port}/${db}`
-    : `redis://${host}:${port}/${db}`
 }
 
 const redis: RedisConnection = {
@@ -20,12 +14,17 @@ const redis: RedisConnection = {
     if (redis.instance !== null) {
       return redis.instance
     } else {
-      const client = createClient({
-        url: generateUri()
+      const client = new Redis({
+        host,
+        port,
+        password,
+        db
       })
-      client.connect().then(() => {
-        redis.instance = client
-      })
+
+      redis.instance = client
+
+      client.on('connect', () => console.log('Redis connected'))
+
       client.on('error', (err) => console.error(`Redis error: ${err}`))
       client.on('close', () => console.log('Client closed'))
     }

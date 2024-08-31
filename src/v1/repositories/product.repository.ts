@@ -4,6 +4,11 @@ import { UserModel } from '../models/account/users.schema'
 import { BadRequest, NotFound } from '~/models/Error'
 import { IListResult } from '~/type'
 import elasticClient from '~/config/elasticsearch.config'
+import { getOrSetCache, clearCache } from '~/utils/cache.utils'
+
+// In-memory cache for non-existent IDs
+const nonExistentIdsCache = new Set<string>()
+
 const findMyProducts = async (
   id: string,
   query: IProductSchema,
@@ -37,30 +42,43 @@ const findPublishedProducts = async (
 }
 
 const findProducts = async (query: IProductSchema, options: QueryOptions, limit: number = 50, offset: number = 0) => {
-  const products = await ProductModel.find(
-    {
-      ...query,
-      isDeleted: false
-    },
-    options
-  )
-    .limit(limit)
-    .skip(offset)
-    .populate('userId')
-  return {
-    data: products,
-    total: products.length,
-    limit,
-    offset
-  }
+  const cacheKey = `products:${limit}:${offset}`
+  console.log('Total products:')
+  return getOrSetCache(cacheKey, async () => {
+    const products = await ProductModel.find(
+      {
+        ...query,
+        isDeleted: false
+      },
+      options
+    )
+      .limit(limit)
+      .skip(offset)
+      .populate('userId')
+    return {
+      data: products,
+      total: products.length,
+      limit,
+      offset
+    }
+  })
 }
 
 const findProductById = async (id: string) => {
-  const product = await ProductModel.findById(id)
-  if (!product) {
+  if (nonExistentIdsCache.has(id)) {
     throw new NotFound('Product not found')
   }
-  return product
+
+  const cacheKey = `product:${id}`
+
+  return getOrSetCache(cacheKey, async () => {
+    const product = await ProductModel.findById(id)
+    if (!product) {
+      nonExistentIdsCache.add(id)
+      throw new NotFound('Product not found')
+    }
+    return product
+  })
 }
 
 const searchProducts = async (search: string, query: IProductSchema, limit: number = 50, offset: number = 0) => {
@@ -141,8 +159,10 @@ const updateProduct = async (id: string, userId: string, payload: IProductSchema
     throw new NotFound('Product not found')
   }
 
+  await clearCache(`product:${id}`)
   return product
 }
+
 const publishProduct = async (id: string, userId: string) => {
   const data = await ProductModel.findOneAndUpdate(
     {
@@ -214,6 +234,7 @@ const deleteProduct = async (id: string, userId: string) => {
     throw new BadRequest('Cannot delete product because it is published')
   }
 
+  await clearCache(`product:${id}`)
   return data
 }
 

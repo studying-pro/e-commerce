@@ -2,6 +2,7 @@ import mongoose, { Schema, model, Document, ObjectId } from 'mongoose'
 import { DOCUMENT_NAME as userDocument } from '../account/users.schema'
 import slugify from 'slugify'
 import elasticClient from '~/config/elasticsearch.config'
+import { clearCache } from '~/utils/cache.utils'
 
 const DOCUMENT_NAME = 'product'
 const COLLECTION_NAME = 'products'
@@ -83,6 +84,7 @@ productSchema.post('save', function (doc: IProductDocument) {
       _doc: doc
     }
   })
+  clearCache(`product:${doc.id}`)
 })
 
 productSchema.post('findOneAndUpdate', function (doc: IProductDocument) {
@@ -95,6 +97,7 @@ productSchema.post('findOneAndUpdate', function (doc: IProductDocument) {
       doc: partialDoc
     }
   })
+  clearCache(`product:${doc.id}`)
 })
 
 productSchema.post('findOneAndDelete', function (doc: IProductDocument) {
@@ -103,6 +106,7 @@ productSchema.post('findOneAndDelete', function (doc: IProductDocument) {
       index: 'products',
       id: doc.id.toString()
     })
+    clearCache(`product:${doc.id}`)
   }
 })
 

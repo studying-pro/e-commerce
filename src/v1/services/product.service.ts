@@ -15,6 +15,7 @@ import {
   updateProduct
 } from '../repositories/product.repository'
 import { IListResult } from '~/type'
+import { getOrSetCache } from '~/utils/cache.utils'
 
 interface IProductService {
   createProduct(type: string, payload: IProductSchema): Promise<IProductDocument>
@@ -65,7 +66,6 @@ class ProductFactory implements IProductService {
     return unpublishProduct(id, userId)
   }
   async searchProduct(search: string, query: IProductSchema, limit: number, offset: number): Promise<IListResult> {
-    console.log('search', search)
     const result = await searchProducts(search, query, limit, offset)
     return {
       data: result.data,
