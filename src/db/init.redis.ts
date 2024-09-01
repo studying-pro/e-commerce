@@ -1,31 +1,28 @@
-import { createClient } from 'redis'
+import { createClient, RedisClientType, RedisDefaultModules } from 'redis'
 import { redisConfig } from '~/config/db.config'
 
 const { host, port, username, password, db } = redisConfig
 
 type RedisConnection = {
-  instance: any | null
+  instance: RedisClientType<RedisDefaultModules> | null
   init: () => void
 }
-
-const generateUri = () => {
-  return username && password
-    ? `redis://${username}:${password}@${host}:${port}/${db}`
-    : `redis://${host}:${port}/${db}`
-}
-
 const redis: RedisConnection = {
   instance: null,
   init: () => {
-    if (redis.instance !== null) {
+    if (redis.instance) {
       return redis.instance
     } else {
       const client = createClient({
-        url: generateUri()
+        url: `redis://${host}:${port}/${db}`
       })
-      client.connect().then(() => {
-        redis.instance = client
-      })
+
+      client.connect()
+
+      redis.instance = client as RedisClientType<RedisDefaultModules>
+
+      client.on('connect', () => console.log('Redis connected'))
+
       client.on('error', (err) => console.error(`Redis error: ${err}`))
       client.on('close', () => console.log('Client closed'))
     }

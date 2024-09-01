@@ -1,9 +1,14 @@
-import { QueryOptions } from 'mongoose'
+import mongoose, { QueryOptions } from 'mongoose'
 import { IProductSchema, ProductModel } from '../models/product/products.schema'
 import { UserModel } from '../models/account/users.schema'
 import { BadRequest, NotFound } from '~/models/Error'
 import { IListResult } from '~/type'
 import elasticClient from '~/config/elasticsearch.config'
+import { getOrSetCache, clearCache } from '~/utils/cache.utils'
+
+// In-memory cache for non-existent IDs
+const nonExistentIdsCache = new Set<string>()
+
 const findMyProducts = async (
   id: string,
   query: IProductSchema,
@@ -36,31 +41,73 @@ const findPublishedProducts = async (
   return findProducts({ ...query, isPublish: true }, options, limit, offset)
 }
 
+const getApproximateCount = async (query: IProductSchema) => {
+  const stats = await ProductModel.aggregate([
+    { $match: { ...query, isDeleted: false, isDraft: false } },
+    { $group: { _id: null, count: { $sum: 1 } } },
+    { $project: { _id: 0, count: 1 } }
+  ])
+  return stats.length > 0 ? stats[0].count : 0
+}
+
 const findProducts = async (query: IProductSchema, options: QueryOptions, limit: number = 50, offset: number = 0) => {
-  const products = await ProductModel.find(
-    {
-      ...query,
-      isDeleted: false
-    },
-    options
-  )
-    .limit(limit)
-    .skip(offset)
-    .populate('userId')
-  return {
-    data: products,
-    total: products.length,
-    limit,
-    offset
-  }
+  const cacheKey = `products:${limit}:${offset}`
+
+  return getOrSetCache(cacheKey, async () => {
+    const totalDoc = await getApproximateCount(query)
+    const skip = offset * limit
+    const products = await ProductModel.aggregate([
+      { $match: { ...query, isDeleted: false, isDraft: false } },
+      { $sort: options.sort ?? { createdAt: -1 } },
+      { $skip: skip },
+      { $limit: limit },
+      { $lookup: { from: 'users', localField: 'userId', foreignField: '_id', as: 'user' } },
+      { $unwind: '$user' },
+      {
+        $project: {
+          user: 1,
+          name: 1,
+          description: 1,
+          price: 1,
+          stock: 1,
+          category: 1,
+          tags: 1,
+          images: 1,
+          isDraft: 1,
+          isPublish: 1,
+          isDeleted: 1,
+          createdAt: 1,
+          updatedAt: 1,
+          _id: 1
+        }
+      }
+    ]).exec()
+
+    return {
+      data: products,
+      total: totalDoc,
+      totalPage: Math.ceil(totalDoc / limit),
+      limit,
+      offset
+    }
+  })
 }
 
 const findProductById = async (id: string) => {
-  const product = await ProductModel.findById(id)
-  if (!product) {
+  if (nonExistentIdsCache.has(id)) {
     throw new NotFound('Product not found')
   }
-  return product
+
+  const cacheKey = `product:${id}`
+
+  return getOrSetCache(cacheKey, async () => {
+    const product = await ProductModel.findById(id)
+    if (!product) {
+      nonExistentIdsCache.add(id)
+      throw new NotFound('Product not found')
+    }
+    return product
+  })
 }
 
 const searchProducts = async (search: string, query: IProductSchema, limit: number = 50, offset: number = 0) => {
@@ -107,8 +154,6 @@ const searchProducts = async (search: string, query: IProductSchema, limit: numb
     }
   })
 
-  console.log('Elasticsearch result:', JSON.stringify(result, null, 2))
-
   const hits = result.hits.hits
   const total = result.hits.total || 0
   const products = hits.map((hit: any) => ({
@@ -141,8 +186,10 @@ const updateProduct = async (id: string, userId: string, payload: IProductSchema
     throw new NotFound('Product not found')
   }
 
+  await clearCache(`product:${id}`)
   return product
 }
+
 const publishProduct = async (id: string, userId: string) => {
   const data = await ProductModel.findOneAndUpdate(
     {
@@ -214,6 +261,7 @@ const deleteProduct = async (id: string, userId: string) => {
     throw new BadRequest('Cannot delete product because it is published')
   }
 
+  await clearCache(`product:${id}`)
   return data
 }
 

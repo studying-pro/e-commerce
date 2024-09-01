@@ -62,19 +62,22 @@ const addToCart = async (payload: ICartProduct, customerId: string): Promise<ICa
 
     await newCart.save()
 
-    const response = await CartModel.findByIdAndUpdate(
-      newCart.id,
+    const response = await CartModel.findOneAndUpdate(
+      {
+        _id: newCart.id
+      },
       {
         $push: {
           products: {
-            ...payload,
-            name: product.name,
-            price: product.price
+            productId: product.id,
+            quantity: payload.quantity,
+            price: product.price,
+            discountId: null
           }
         },
         $inc: { count: 1 }
       },
-      { new: true }
+      { new: true, upsert: true }
     )
 
     if (!response) {
@@ -84,7 +87,26 @@ const addToCart = async (payload: ICartProduct, customerId: string): Promise<ICa
     return response
   }
 
-  return updateQuantityForProductsInCart(cart.id, product, payload.quantity)
+  if (cart.products.some((product) => product.productId.toString() === payload.productId)) {
+    return updateQuantityForProductsInCart(cart.id, product, payload.quantity)
+  }
+
+  return CartModel.findOneAndUpdate(
+    {
+      customerId
+    },
+    {
+      $push: {
+        products: {
+          ...payload,
+          price: product.price,
+          name: product.name
+        }
+      },
+      $inc: { count: 1 }
+    },
+    { new: true, upsert: true }
+  )
 }
 
 const updateCart = async (productId: string, customerId: string, quantity: number): Promise<ICartDocument> => {
@@ -171,18 +193,18 @@ const reviewCarts = async (
   const appliedDiscounts = productWithDiscounts.map(async (item) => {
     const quantity = cart.products.find((product) => product.productId.toString() === item.productId)?.quantity ?? 0
     const product = products.find((product) => product.id === item.productId)
-    const discount = await checkAndApplyDiscount(item.discountCode, product, quantity, cart.customerId)
+    const finalResult = await checkAndApplyDiscount(item.discountCode, product, quantity, cart.customerId)
     return {
       ...item,
-      discountId: discount.discountId,
-      discount: discount.finalPrice
+      discountId: finalResult.discountId,
+      priceAfterDiscount: finalResult.finalPrice
     }
   })
 
   const discountsApplied = await Promise.all(appliedDiscounts)
 
-  const total = results.reduce((acc, curr) => acc + curr.subtotal, 0) + feeShipping
-  const totalAfterDiscount = total - discountsApplied.reduce((acc, curr) => acc + curr.discount, 0)
+  const total = results.reduce((acc, curr) => acc + curr.subtotal, 0)
+  const totalAfterDiscount = discountsApplied.reduce((acc, curr) => acc + curr.priceAfterDiscount, 0) + feeShipping
   return {
     products: results,
     total,

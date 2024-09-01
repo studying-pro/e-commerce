@@ -7,7 +7,7 @@ import {
   deleteProduct,
   findMyProducts,
   findProductById,
-  findProducts,
+  findPublishedProducts,
   publishProduct,
   restoreProduct,
   searchProducts,
@@ -55,7 +55,7 @@ class ProductFactory implements IProductService {
   }
 
   async findProducts(query: any, options: QueryOptions, limit: number, offset: number) {
-    return findProducts(query, options, limit, offset)
+    return findPublishedProducts(query, options, limit, offset)
   }
 
   async publishProduct(id: string, userId: string): Promise<IProductDocument> {
@@ -65,7 +65,6 @@ class ProductFactory implements IProductService {
     return unpublishProduct(id, userId)
   }
   async searchProduct(search: string, query: IProductSchema, limit: number, offset: number): Promise<IListResult> {
-    console.log('search', search)
     const result = await searchProducts(search, query, limit, offset)
     return {
       data: result.data,

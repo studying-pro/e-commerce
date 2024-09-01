@@ -9,6 +9,7 @@ import router from './v1/routes'
 import { errorGloballyHandler } from './middlewares/error.handler'
 import redis from './db/init.redis'
 import initElasticsearch from './db/init.elasticsearch'
+import limiter from './middlewares/rate.limiting'
 
 const app = express()
 
@@ -18,7 +19,7 @@ app.use(cors())
 app.use(morgan('dev'))
 app.use(compression())
 app.use(json())
-
+app.use(limiter)
 // Initialize the database connection
 db.init()
 redis.init()

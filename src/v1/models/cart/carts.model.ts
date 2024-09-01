@@ -10,7 +10,7 @@ interface IUpdateCartProduct {
   version: number
 }
 interface ICartProduct {
-  productId: mongoose.Types.ObjectId
+  productId: string
   quantity: number
   price: number
   name: string
