@@ -70,6 +70,9 @@ const productSchema = new Schema<IProductDocument>(
 // Add text index
 productSchema.index({ name: 'text', description: 'text' })
 
+// Add approximate count index
+productSchema.index({ isDeleted: 1, isDraft: 1, isPublish: 1 }, { sparse: true })
+
 productSchema.pre('save', function (next) {
   this.slug = slugify(this.name, { lower: true })
   next()

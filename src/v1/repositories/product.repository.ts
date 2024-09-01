@@ -1,4 +1,4 @@
-import { QueryOptions } from 'mongoose'
+import mongoose, { QueryOptions } from 'mongoose'
 import { IProductSchema, ProductModel } from '../models/product/products.schema'
 import { UserModel } from '../models/account/users.schema'
 import { BadRequest, NotFound } from '~/models/Error'
@@ -41,23 +41,52 @@ const findPublishedProducts = async (
   return findProducts({ ...query, isPublish: true }, options, limit, offset)
 }
 
+const getApproximateCount = async (query: IProductSchema) => {
+  const stats = await ProductModel.aggregate([
+    { $match: { ...query, isDeleted: false, isDraft: false } },
+    { $group: { _id: null, count: { $sum: 1 } } },
+    { $project: { _id: 0, count: 1 } }
+  ])
+  return stats.length > 0 ? stats[0].count : 0
+}
+
 const findProducts = async (query: IProductSchema, options: QueryOptions, limit: number = 50, offset: number = 0) => {
   const cacheKey = `products:${limit}:${offset}`
-  console.log('Total products:')
+
   return getOrSetCache(cacheKey, async () => {
-    const products = await ProductModel.find(
+    const totalDoc = await getApproximateCount(query)
+    const skip = offset * limit
+    const products = await ProductModel.aggregate([
+      { $match: { ...query, isDeleted: false, isDraft: false } },
+      { $sort: options.sort ?? { createdAt: -1 } },
+      { $skip: skip },
+      { $limit: limit },
+      { $lookup: { from: 'users', localField: 'userId', foreignField: '_id', as: 'user' } },
+      { $unwind: '$user' },
       {
-        ...query,
-        isDeleted: false
-      },
-      options
-    )
-      .limit(limit)
-      .skip(offset)
-      .populate('userId')
+        $project: {
+          user: 1,
+          name: 1,
+          description: 1,
+          price: 1,
+          stock: 1,
+          category: 1,
+          tags: 1,
+          images: 1,
+          isDraft: 1,
+          isPublish: 1,
+          isDeleted: 1,
+          createdAt: 1,
+          updatedAt: 1,
+          _id: 1
+        }
+      }
+    ]).exec()
+
     return {
       data: products,
-      total: products.length,
+      total: totalDoc,
+      totalPage: Math.ceil(totalDoc / limit),
       limit,
       offset
     }
@@ -124,8 +153,6 @@ const searchProducts = async (search: string, query: IProductSchema, limit: numb
       }
     }
   })
-
-  console.log('Elasticsearch result:', JSON.stringify(result, null, 2))
 
   const hits = result.hits.hits
   const total = result.hits.total || 0

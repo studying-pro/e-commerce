@@ -1,5 +1,5 @@
 import { NotFound } from '~/models/Error'
-import { ICart, ICartProduct, IUpdateCartProduct } from '../models/cart/carts.model'
+import { ICart, CartModel, ICartProduct, IUpdateCartProduct, ICartDocument } from '../models/cart/carts.model'
 import {
   addToCart,
   createCart,
@@ -9,12 +9,16 @@ import {
   updateCart
 } from '../repositories/cart.repository'
 import mongoose from 'mongoose'
+import inventoryService from './inventory.service'
+import { queueOrderRequest } from '~/utils/redisQueue'
+import { getOrSetCache, setCache } from '~/utils/cache.utils'
 
 interface ICartService {
   createCart(customerId: string): Promise<ICart>
   addToCart(productId: string, quantity: number, customerId: string, name: string, price: number): Promise<ICart>
   removeFromCart(productId: string[], customerId: string): Promise<ICart>
   updateCart(payload: IUpdateCartProduct): Promise<ICart>
+  getCartByCustomerId(customerId: string): Promise<ICartDocument>
   reviewCarts(
     customerId: string,
     productDiscounts: {
@@ -30,8 +34,7 @@ class CartService implements ICartService {
     return createCart(customerId)
   }
   async addToCart(productId: string, quantity: number, customerId: string): Promise<ICart> {
-    const newProductId = new mongoose.Types.ObjectId(productId)
-    return addToCart({ quantity, productId: newProductId } as ICartProduct, customerId)
+    return addToCart({ quantity, productId } as ICartProduct, customerId)
   }
   async removeFromCart(productIds: string[], customerId: string): Promise<ICart> {
     return removeFromCart(customerId, productIds)
@@ -44,6 +47,10 @@ class CartService implements ICartService {
     return updateCart(productId, customerId, quantity - oldQuantity)
   }
 
+  async getCartByCustomerId(customerId: string): Promise<ICartDocument> {
+    return getCartByCustomerId(customerId)
+  }
+
   async reviewCarts(
     customerId: string,
     productDiscounts: {
@@ -52,12 +59,14 @@ class CartService implements ICartService {
     }[],
     address: string
   ): Promise<any> {
-    // Implement logic to review and apply discounts
     const cart = await getCartByCustomerId(customerId)
     if (!cart) {
       throw new NotFound('Cart not found')
     }
-    return reviewCarts(cart, productDiscounts, address)
+
+    const reviewedCart = await reviewCarts(cart, productDiscounts, address)
+    const redisKey = `reviewed_cart_${customerId}`
+    return setCache(redisKey, reviewedCart)
   }
 }
 

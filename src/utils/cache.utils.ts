@@ -8,16 +8,31 @@ export async function getOrSetCache(key: string, cb: () => Promise<any>, expirat
     throw new Error('Redis instance not initialized')
   }
 
-  const cachedData = await instance.call('JSON.GET', key)
+  const cachedData = await instance.json.get(key)
   if (cachedData !== null) {
-    console.log(cachedData)
-    return JSON.parse(cachedData as string)
+    return cachedData
   }
 
   const freshData = await cb()
-  await instance.call('JSON.SET', key, '$', JSON.stringify(freshData))
-  await instance.call('EXPIRE', key, expiration)
+  await instance.json.set(key, '$', freshData)
+  await instance.expire(key, expiration)
   return freshData
+}
+
+export async function setCache(key: string, value: any, expiration = DEFAULT_EXPIRATION) {
+  const instance = redis.instance
+  if (!instance) {
+    throw new Error('Redis instance not initialized')
+  }
+
+  const cachedData = await instance.json.get(key)
+  if (cachedData !== null) {
+    return cachedData
+  }
+
+  await instance.json.set(key, '$', value)
+  await instance.expire(key, expiration)
+  return value
 }
 
 export async function clearCache(key: string) {
@@ -26,5 +41,15 @@ export async function clearCache(key: string) {
     throw new Error('Redis instance not initialized')
   }
 
-  await instance.call('JSON.DEL', key)
+  await instance.del(key)
+}
+
+export async function getJSONCache(key: string): Promise<any> {
+  const instance = redis.instance
+  if (!instance) {
+    throw new Error('Redis instance not initialized')
+  }
+
+  const cachedData = await instance.json.get(key)
+  return cachedData
 }

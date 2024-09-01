@@ -20,14 +20,7 @@ const ReviewCartRequestValidate = Joi.object({
         discountCode: Joi.string().optional()
       })
     )
-    .required(),
-  address: Joi.object({
-    street: Joi.string().required(),
-    city: Joi.string().required(),
-    state: Joi.string().required(),
-    country: Joi.string().required(),
-    postalCode: Joi.string().required()
-  }).required()
+    .required()
 })
 
 export { AddProductToCartValidate, UpdateCartValidate, ReviewCartRequestValidate }

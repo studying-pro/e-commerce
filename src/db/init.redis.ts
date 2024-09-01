@@ -1,27 +1,25 @@
-import Redis from 'ioredis'
+import { createClient, RedisClientType, RedisDefaultModules } from 'redis'
 import { redisConfig } from '~/config/db.config'
 
 const { host, port, username, password, db } = redisConfig
 
 type RedisConnection = {
-  instance: Redis | null
+  instance: RedisClientType<RedisDefaultModules> | null
   init: () => void
 }
-
 const redis: RedisConnection = {
   instance: null,
   init: () => {
-    if (redis.instance !== null) {
+    if (redis.instance) {
       return redis.instance
     } else {
-      const client = new Redis({
-        host,
-        port,
-        password,
-        db
+      const client = createClient({
+        url: `redis://${host}:${port}/${db}`
       })
 
-      redis.instance = client
+      client.connect()
+
+      redis.instance = client as RedisClientType<RedisDefaultModules>
 
       client.on('connect', () => console.log('Redis connected'))
 

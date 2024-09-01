@@ -7,7 +7,7 @@ import {
   deleteProduct,
   findMyProducts,
   findProductById,
-  findProducts,
+  findPublishedProducts,
   publishProduct,
   restoreProduct,
   searchProducts,
@@ -15,7 +15,6 @@ import {
   updateProduct
 } from '../repositories/product.repository'
 import { IListResult } from '~/type'
-import { getOrSetCache } from '~/utils/cache.utils'
 
 interface IProductService {
   createProduct(type: string, payload: IProductSchema): Promise<IProductDocument>
@@ -56,7 +55,7 @@ class ProductFactory implements IProductService {
   }
 
   async findProducts(query: any, options: QueryOptions, limit: number, offset: number) {
-    return findProducts(query, options, limit, offset)
+    return findPublishedProducts(query, options, limit, offset)
   }
 
   async publishProduct(id: string, userId: string): Promise<IProductDocument> {
