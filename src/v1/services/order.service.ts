@@ -59,7 +59,7 @@ class OrderService {
 
   private async startOrderTransaction(cart: any, orderId: string, client?: ClientSession) {
     await queueOrderRequest(orderId, async () => {
-      const detuctInventory = cart.products.map(async (product: any, index: number) => {
+      const detuctInventory = cart.products.map(async (product: any) => {
         const inventory = await inventoryService.getInventory(product.productId)
         if (inventory.quantity < product.quantity) {
           throw new BadRequest(`Product ${product.productId} is out of stock`)

@@ -1,6 +1,6 @@
 import 'dotenv/config'
 import app from '~/app'
-import { setupSwagger } from '~/config/swagger'
+import { setupSwagger } from '~/helper/swagger'
 
 const portEnv = Number(process.env.PORT ?? '3000')
 const PORT: number = portEnv
