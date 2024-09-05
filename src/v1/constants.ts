@@ -4,7 +4,8 @@ const HEADER = {
   REFRESH_TOKEN: 'x-client-refresh-token',
   AUTHORIZATION: 'authorization',
   CONTENT_TYPE: 'content-type',
-  KEY_STORE_ID: 'key-store-id'
+  KEY_STORE_ID: 'key-store-id',
+  REQUEST_ID: 'x-request-id'
 }
 
 const EXPIRY_DATE = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)

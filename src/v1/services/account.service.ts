@@ -5,7 +5,6 @@ import crypto from 'crypto'
 import KeyTokenService from './key-token.service'
 import { createPairToken, verifyToken } from '~/auth/auth.utils'
 import { getIntoData } from '~/utils'
-import { RoleModel } from '../models/account/roles.schema'
 import { random } from 'lodash'
 import { EXPIRY_DATE } from '../constants'
 import { KeyTokenStore } from '../models/account/keys-store.schema'
@@ -95,7 +94,6 @@ class AccountService implements IAccountService {
     const user = new UserModel({
       email,
       userName: `${firstname}_${lastname}_${random(1000, 9999)}`,
-      role: await RoleModel.findOne({ name: 'Seller' }),
       password: hashedPassword,
       firstName: firstname,
       lastName: lastname

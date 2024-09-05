@@ -1,5 +1,5 @@
 import { Router } from 'express'
-import { authenticationHandler } from '~/middlewares/auth.handler'
+import { requiresAuth } from 'express-openid-connect' // Import the requiresAuth middleware
 import { asyncHandler } from '~/middlewares/error.handler'
 import { validate, validateQuery } from '~/middlewares/validate'
 import productController from '~/v1/controllers/product.controller'
@@ -10,7 +10,9 @@ const productRouter = Router()
 productRouter.get('/', asyncHandler(productController.getProducts))
 productRouter.get('/search', validateQuery(queryProductsSchema), asyncHandler(productController.searchProduct))
 productRouter.get('/:id', asyncHandler(productController.getProduct))
-productRouter.use(asyncHandler(authenticationHandler))
+
+// Protect routes with requiresAuth middleware
+productRouter.use(requiresAuth())
 
 productRouter.post('/', validate(createProductSchema), asyncHandler(productController.createProduct))
 productRouter.patch('/:id', validate(updateProductSchema), asyncHandler(productController.updateProduct))
@@ -21,4 +23,5 @@ productRouter.get('/me', validateQuery(queryProductsSchema), asyncHandler(produc
 productRouter.get('/me/drafts', asyncHandler(productController.getDraftProducts))
 productRouter.put('/me/:id/publish', asyncHandler(productController.publishProduct))
 productRouter.put('/me/:id/unpublish', asyncHandler(productController.unpublishProduct))
+
 export default productRouter
