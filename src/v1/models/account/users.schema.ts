@@ -1,5 +1,4 @@
 import mongoose, { Schema, Document, ObjectId } from 'mongoose'
-import { DOCUMENT_NAME as rolesDocumentName } from './roles.schema'
 // Declare the Schema of the Mongo model
 const DOCUMENT_NAME = 'user'
 const COLLECTION_NAME = 'users'
@@ -40,11 +39,6 @@ const userSchema: Schema<IUserDocument> = new mongoose.Schema(
       type: String,
       required: true,
       select: false
-    },
-    role: {
-      type: mongoose.Schema.Types.ObjectId,
-      required: true,
-      ref: rolesDocumentName
     }
   },
   {
