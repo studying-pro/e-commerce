@@ -24,8 +24,6 @@ app.use(loggerHandler)
 
 // Initialize the database connection
 db.init()
-redis.init()
-initElasticsearch()
 
 app.use('/api/v1', router)
 
