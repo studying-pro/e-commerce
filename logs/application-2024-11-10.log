@@ -1,0 +1,16 @@
+2024-11-10 22:33:03 +07:00 info: Request received [requestId: e0966c96-d39f-4e5f-9393-5776e9e69f0d] [loggerHandler] at /api-docs/ GET query:  {"meta":{}}
+2024-11-10 22:33:03 +07:00 info: Request received [requestId: 2bab9216-4f76-4e29-90b7-c31e39191ebf] [loggerHandler] at /api-docs/swagger-ui.css GET query:  {"meta":{}}
+2024-11-10 22:33:03 +07:00 info: Request received [requestId: 11fe7b5c-6bb0-4fe2-bdb0-27113df442be] [loggerHandler] at /api-docs/swagger-ui-bundle.js GET query:  {"meta":{}}
+2024-11-10 22:33:03 +07:00 info: Request received [requestId: fb839a44-126b-4b5e-b63e-c26e02ef25c8] [loggerHandler] at /api-docs/swagger-ui-standalone-preset.js GET query:  {"meta":{}}
+2024-11-10 22:33:03 +07:00 info: Request received [requestId: b9a42148-ed61-449b-a1c4-2b8d82323050] [loggerHandler] at /api-docs/swagger-ui-init.js GET query:  {"meta":{}}
+2024-11-10 22:33:04 +07:00 info: Request received [requestId: d54c6e43-1246-446b-b022-808ce0731498] [loggerHandler] at /api-docs/favicon-32x32.png GET query:  {"meta":{}}
+2024-11-10 22:33:14 +07:00 info: Request received [requestId: d2120b08-82e4-484c-86f9-fc74bc5d6dd5] [loggerHandler] at /api/v1/products GET query:  {"meta":{}}
+2024-11-10 22:33:14 +07:00 error: 500 ERR unknown command 'JSON.GET', with args beginning with: 'products:NaN:NaN'  [requestId: d2120b08-82e4-484c-86f9-fc74bc5d6dd5] [errorGloballyHandler] at /api/v1/products GET query:  {"meta":{"param":{}}}
+2024-11-10 23:33:26 +07:00 info: Request received [requestId: 47e34c95-c13f-45bf-b933-3fc5808e013d] [loggerHandler] at /api-docs/ GET query:  {"meta":{}}
+2024-11-10 23:33:27 +07:00 info: Request received [requestId: e945ffa9-9761-418e-9cd1-97ddb254c919] [loggerHandler] at /api-docs/swagger-ui.css GET query:  {"meta":{}}
+2024-11-10 23:33:27 +07:00 info: Request received [requestId: d232ec6d-e414-4a58-a4cc-d5d63ef2eeab] [loggerHandler] at /api-docs/swagger-ui-bundle.js GET query:  {"meta":{}}
+2024-11-10 23:33:27 +07:00 info: Request received [requestId: 210f2875-a818-4ffe-83c0-5811367aaaea] [loggerHandler] at /api-docs/swagger-ui-standalone-preset.js GET query:  {"meta":{}}
+2024-11-10 23:33:27 +07:00 info: Request received [requestId: fe158584-cd30-400a-8281-22a0d7fa8590] [loggerHandler] at /api-docs/swagger-ui-init.js GET query:  {"meta":{}}
+2024-11-10 23:33:27 +07:00 info: Request received [requestId: 626a666d-6868-447e-88db-fe053433a82d] [loggerHandler] at /api-docs/favicon-32x32.png GET query:  {"meta":{}}
+2024-11-10 23:33:31 +07:00 info: Request received [requestId: a40ca8ec-dec9-417a-ada7-ccea9933f360] [loggerHandler] at /api/v1/products GET query:  {"meta":{}}
+2024-11-10 23:33:31 +07:00 error: 5107200 invalid argument to $skip stage: Expected an integer, but found NaN in: $skip: nan.0 [requestId: a40ca8ec-dec9-417a-ada7-ccea9933f360] [errorGloballyHandler] at /api/v1/products GET query:  {"meta":{"param":{}}}

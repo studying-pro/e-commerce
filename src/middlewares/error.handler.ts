@@ -13,6 +13,8 @@ const asyncHandler = (fn: (req: Request, res: Response, next: NextFunction) => P
 const errorGloballyHandler = (err: CustomError, req: Request, res: Response, next: NextFunction) => {
   const errMsg = err.message || ReasonPhrases.INTERNAL_SERVER_ERROR
   const errCode = err.code || StatusCode.INTERNAL_SERVER_ERROR
+  const stack = err.stack
+  console.log('stack', stack)
   const data: ILogging = {
     level: 'error',
     message: `${errCode} ${errMsg}`,

@@ -92,7 +92,7 @@ const addToCart = async (payload: ICartProduct, customerId: string): Promise<ICa
   }
 
   return CartModel.findOneAndUpdate(
-    {
+    { 
       customerId
     },
     {

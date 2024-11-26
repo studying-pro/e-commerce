@@ -24,6 +24,7 @@ app.use(loggerHandler)
 
 // Initialize the database connection
 db.init()
+redis.init()
 
 app.use('/api/v1', router)
 

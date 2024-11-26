@@ -1,5 +1,5 @@
 import { Router } from 'express'
-import { requiresAuth } from 'express-openid-connect' // Import the requiresAuth middleware
+import { authenticationHandler } from '~/middlewares/auth.handler'
 import { asyncHandler } from '~/middlewares/error.handler'
 import { validate, validateQuery } from '~/middlewares/validate'
 import productController from '~/v1/controllers/product.controller'
@@ -12,7 +12,7 @@ productRouter.get('/search', validateQuery(queryProductsSchema), asyncHandler(pr
 productRouter.get('/:id', asyncHandler(productController.getProduct))
 
 // Protect routes with requiresAuth middleware
-productRouter.use(requiresAuth())
+productRouter.use(asyncHandler(authenticationHandler))
 
 productRouter.post('/', validate(createProductSchema), asyncHandler(productController.createProduct))
 productRouter.patch('/:id', validate(updateProductSchema), asyncHandler(productController.updateProduct))

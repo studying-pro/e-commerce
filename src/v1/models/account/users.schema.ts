@@ -39,6 +39,11 @@ const userSchema: Schema<IUserDocument> = new mongoose.Schema(
       type: String,
       required: true,
       select: false
+    },
+    role: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'role',
+      required: true
     }
   },
   {

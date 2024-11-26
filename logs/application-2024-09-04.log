@@ -1,2 +1,0 @@
-2024-09-04 23:08:13 +07:00 info: Request received [requestId: 907d518e-34fc-4d68-b096-077f70ca053e] [loggerHandler] at /api/v1/account/signup POST body:  {"meta":{}}
-2024-09-04 23:08:13 +07:00 error: "password" is required [requestId: 907d518e-34fc-4d68-b096-077f70ca053e] [errorGloballyHandler] at /api/v1/account/signup POST body:  {"meta":{"body":{"email":"nguyennhutquoc1412@gmail.com","firstname":"Quoc"}}}

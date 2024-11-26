@@ -1,6 +1,7 @@
 version: '3.8'
 
 services:
+  # Elasticsearch
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:8.15.0
     container_name: elasticsearch
@@ -33,8 +34,36 @@ services:
     networks:
       - elastic-net
 
+  # MONGODB
+  mongodb:
+    image: mongo:latest
+    container_name: mongodb
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=mongo_root
+      - MONGO_INITDB_ROOT_PASSWORD=Mongo123*
+    volumes:
+      - mongodb-data:/data/db
+    networks:
+      - elastic-net
+    ports:
+      - '37017:27017'
+  # Redis
+  redis-stack:
+    image: redis/redis-stack-server:latest # Sử dụng Redis Stack image mới nhất
+    container_name: redis-stack
+    ports:
+      - '6379:6379' # Port Redis
+      - '8001:8001' # Port RedisInsight
+    volumes:
+      - redis-data:/data # Lưu trữ dữ liệu Redis
+
 volumes:
   elasticsearch-data:
+    driver: local # Tùy chọn loại volume (local, volume,...) hoặc tùy chỉnh tùy theo cấu hình của bạn.
+  mongodb-data:
+    driver: local
+  redis-data:
+    driver: local
 
 networks:
   elastic-net:

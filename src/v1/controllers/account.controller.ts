@@ -16,9 +16,9 @@ class AccountController {
     return new OKResponse('User logged in successfully', data).send(res)
   }
   async signUp(req: Request, res: Response) {
-    const { email, password, firstname, lastname } = req.body
+    const { email } = req.body
 
-    const data = await AccountService.signUp(email, password, firstname, lastname)
+    const data = await AccountService.signUp(email)
     return new CreatedResponse('User created successfully', data).send(res)
   }
 

@@ -1,0 +1,22 @@
+2024-11-08 10:39:46 +07:00 info: Request received [requestId: 7a431480-b14a-491b-afd2-22251f8baf70] [loggerHandler] at /api/v1/products?limit=50&offset=0 GET query:  {"meta":{}}
+2024-11-08 10:39:46 +07:00 error: 500 Redis instance not initialized [requestId: 7a431480-b14a-491b-afd2-22251f8baf70] [errorGloballyHandler] at /api/v1/products?limit=50&offset=0 GET query:  {"meta":{"param":{}}}
+2024-11-08 17:01:54 +07:00 info: Request received [requestId: b742c52a-2971-412c-b878-ba3258709dde] [loggerHandler] at / GET query:  {"meta":{}}
+2024-11-08 17:02:03 +07:00 info: Request received [requestId: bfeeff4e-2e6d-45fa-a5f1-b0432a1187e6] [loggerHandler] at /swagger GET query:  {"meta":{}}
+2024-11-08 17:04:50 +07:00 info: Request received [requestId: af1f549f-0859-4f73-991e-b69b4381d92e] [loggerHandler] at /swagger GET query:  {"meta":{}}
+2024-11-08 17:05:46 +07:00 info: Request received [requestId: 4402f505-f6bd-4e6e-8a56-7e5674266679] [loggerHandler] at /api-docs GET query:  {"meta":{}}
+2024-11-08 17:05:46 +07:00 info: Request received [requestId: 9c0378e6-d8e7-4f74-8e28-b8fc5c30019c] [loggerHandler] at /api-docs/ GET query:  {"meta":{}}
+2024-11-08 17:05:46 +07:00 info: Request received [requestId: 5f66d43f-42c7-4157-9f4c-e5d8168adf21] [loggerHandler] at /api-docs/swagger-ui.css GET query:  {"meta":{}}
+2024-11-08 17:05:46 +07:00 info: Request received [requestId: b11d7fd9-d533-4d08-88eb-7e319530c081] [loggerHandler] at /api-docs/swagger-ui-bundle.js GET query:  {"meta":{}}
+2024-11-08 17:05:46 +07:00 info: Request received [requestId: e2f4fc7b-230d-4243-b718-b63d539cec8b] [loggerHandler] at /api-docs/swagger-ui-standalone-preset.js GET query:  {"meta":{}}
+2024-11-08 17:05:46 +07:00 info: Request received [requestId: 26d5666e-079b-4fcd-ae2d-41085bc233d9] [loggerHandler] at /api-docs/swagger-ui-init.js GET query:  {"meta":{}}
+2024-11-08 17:05:46 +07:00 info: Request received [requestId: e81ecc2f-1616-4cbc-8431-584d5dd50dc4] [loggerHandler] at /api-docs/favicon-32x32.png GET query:  {"meta":{}}
+2024-11-08 17:06:22 +07:00 info: Request received [requestId: d3656349-75b8-4abe-b893-1ad266c082af] [loggerHandler] at /api-docs/ GET query:  {"meta":{}}
+2024-11-08 17:06:22 +07:00 info: Request received [requestId: f86a498f-c56a-447a-aa98-8d765034b822] [loggerHandler] at /api-docs/swagger-ui.css GET query:  {"meta":{}}
+2024-11-08 17:06:22 +07:00 info: Request received [requestId: 8cfd3b0d-32cd-4441-9672-60420ec28e64] [loggerHandler] at /api-docs/swagger-ui-standalone-preset.js GET query:  {"meta":{}}
+2024-11-08 17:06:22 +07:00 info: Request received [requestId: 9ee760eb-35be-48eb-8c46-ae4dcc26a2a9] [loggerHandler] at /api-docs/swagger-ui-bundle.js GET query:  {"meta":{}}
+2024-11-08 17:06:22 +07:00 info: Request received [requestId: cddffb27-a2f0-4eb5-9782-be86b8443467] [loggerHandler] at /api-docs/swagger-ui-init.js GET query:  {"meta":{}}
+2024-11-08 17:06:22 +07:00 info: Request received [requestId: a938d9a3-f025-49f8-8903-36850121c8e4] [loggerHandler] at /api-docs/favicon-32x32.png GET query:  {"meta":{}}
+2024-11-08 17:06:33 +07:00 info: Request received [requestId: b73fbe47-af0f-4507-8590-f591e728c0ea] [loggerHandler] at /api/v1/products GET query:  {"meta":{}}
+2024-11-08 17:06:34 +07:00 error: 500 ERR unknown command 'JSON.GET', with args beginning with: 'products:NaN:NaN'  [requestId: b73fbe47-af0f-4507-8590-f591e728c0ea] [errorGloballyHandler] at /api/v1/products GET query:  {"meta":{"param":{}}}
+2024-11-08 17:07:09 +07:00 info: Request received [requestId: 965008e8-b9d3-4ebf-aac5-3774b902253b] [loggerHandler] at /api/v1/products?limit=10&offset=5 GET query:  {"meta":{}}
+2024-11-08 17:07:09 +07:00 error: 500 ERR unknown command 'JSON.GET', with args beginning with: 'products:10:5'  [requestId: 965008e8-b9d3-4ebf-aac5-3774b902253b] [errorGloballyHandler] at /api/v1/products?limit=10&offset=5 GET query:  {"meta":{"param":{}}}
